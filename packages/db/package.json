@@ -11,6 +11,7 @@
     "db:seed": "npx tsx src/seed.ts"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
     "drizzle-orm": "^0.32.0",
     "pg": "^8.12.0"
   },

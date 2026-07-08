@@ -11,41 +11,67 @@ if (typeof process !== "undefined" && typeof process.cwd === "function") {
   }
 }
 
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { neon } from "@neondatabase/serverless";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
+import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
 // ─── Lazy singleton ──────────────────────────────────────────────────────────
-// Pool is created on first call to getDb() so that process.env.DATABASE_URL
-// is already populated by the CF Workers env-bridge middleware before any
-// database query runs.
-let _pool: Pool | null = null;
-let _db: NodePgDatabase<typeof schema> | null = null;
+// biome-ignore lint/suspicious/noExplicitAny: singleton dinâmico de múltiplos drivers de banco
+let _db: any = null;
 
-export function getDb(): NodePgDatabase<typeof schema> {
-  if (!_db) {
-    if (!process.env.DATABASE_URL) {
-      throw new Error(
-        "DATABASE_URL is not set. Ensure the env-bridge middleware has run before calling getDb().",
-      );
+/**
+ * Returns the Drizzle database instance, lazily initialized.
+ * - On Cloudflare Workers / Neon: uses @neondatabase/serverless (HTTP)
+ * - On local Node.js / Docker:   uses pg Pool (via dynamic import)
+ */
+// biome-ignore lint/suspicious/noExplicitAny: singleton dinâmico de múltiplos drivers de banco
+export function getDb(): any {
+  if (_db) return _db;
+
+  if (!process.env.DATABASE_URL) {
+    throw new Error(
+      "DATABASE_URL is not set. Ensure the env-bridge middleware has run before calling getDb().",
+    );
+  }
+
+  const isNeon = process.env.DATABASE_URL.includes("neon.tech");
+
+  if (isNeon) {
+    // Neon HTTP driver — edge-compatible, no TCP sockets needed
+    const client = neon(process.env.DATABASE_URL);
+    _db = drizzleNeon(client, { schema });
+  } else {
+    // Node.js pg Pool — for local Docker dev
+    // Dynamic require prevents esbuild/wrangler from bundling pg at build time
+    // biome-ignore lint/style/noCommaOperator: dynamic require trick to hide from esbuild
+    const _require =
+      typeof require !== "undefined"
+        ? require
+        : (0, eval)('typeof require !== "undefined" ? require : undefined');
+    if (!_require) {
+      throw new Error("Node.js require() is not available in this runtime.");
     }
-    _pool = new Pool({
+    const { Pool } = _require("pg");
+    const { drizzle: drizzleNode } = _require("drizzle-orm/node-postgres");
+    const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      max: 4, // Permite concorrência de queries sequenciais na mesma rota
-      idleTimeoutMillis: 100, // Libera e fecha sockets ociosos quase que instantaneamente (100ms)
+      max: 4,
+      idleTimeoutMillis: 100,
       connectionTimeoutMillis: 1500,
     });
-    _db = drizzle(_pool, {
+    _db = drizzleNode(pool, {
       schema,
       logger: process.env.NODE_ENV !== "production",
     });
   }
+
   return _db;
 }
 
-// Convenience re-export so existing `import { db } from "@totem/db"` still works
-export const db = new Proxy({} as NodePgDatabase<typeof schema>, {
+// Convenience re-export so `import { db } from "@totem/db"` still works
+// The Proxy delegates every property access to the lazy singleton
+export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
   get(_target, prop) {
     return Reflect.get(getDb(), prop);
   },
