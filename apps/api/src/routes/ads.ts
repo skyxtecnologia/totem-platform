@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { db, adCampaigns, adCreatives } from "@totem/db";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { db, adCampaigns, adCreatives, and, eq, gte, lte } from "@totem/db";
 import { createAdCampaignSchema, createAdCreativeSchema } from "@totem/validators";
 
 const router = new Hono();

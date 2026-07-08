@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { db, events } from "@totem/db";
-import { and, eq, gte, asc } from "drizzle-orm";
+import { db, events, and, eq, gte, asc } from "@totem/db";
 import { createEventSchema } from "@totem/validators";
 
 const router = new Hono();

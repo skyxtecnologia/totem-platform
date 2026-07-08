@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { db, hotels } from "@totem/db";
-import { and, eq } from "drizzle-orm";
+import { db, hotels, and, eq } from "@totem/db";
 import { createHotelSchema } from "@totem/validators";
 
 const router = new Hono();

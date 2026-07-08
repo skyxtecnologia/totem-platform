@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { db, movies, movieSessions } from "@totem/db";
-import { and, eq, gte, asc } from "drizzle-orm";
+import { db, movies, movieSessions, and, eq, gte, asc } from "@totem/db";
 import { createMovieSchema, createMovieSessionSchema } from "@totem/validators";
 
 const router = new Hono();

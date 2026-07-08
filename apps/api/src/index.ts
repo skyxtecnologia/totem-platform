@@ -1,6 +1,5 @@
-import { db, deviceStatusEnum, devices } from "@totem/db";
+import { db, deviceStatusEnum, devices, and, eq } from "@totem/db";
 import type { DeviceJWTPayload } from "@totem/types";
-import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { deviceAuthMiddleware } from "./middlewares/auth";
 import type { Env } from "./types";

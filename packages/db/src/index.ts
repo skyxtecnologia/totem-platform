@@ -48,3 +48,5 @@ export const db = new Proxy({} as NodePgDatabase<typeof schema>, {
 
 // Export all schemas and enums for easy access
 export * from "./schema";
+export * from "drizzle-orm";
+
