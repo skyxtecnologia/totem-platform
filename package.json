@@ -2,6 +2,8 @@
   "name": "totem-platform-monorepo",
   "private": true,
   "scripts": {
+    "dev:api": "node node_modules/wrangler/bin/wrangler.js dev --cwd apps/api",
+    "dev:dashboard": "node node_modules/next/dist/bin/next dev apps/dashboard",
     "docker:dev": "docker-compose up -d",
     "format": "biome format --write .",
     "lint": "biome lint .",

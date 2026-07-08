@@ -10,6 +10,7 @@ export function TopBar() {
   const handleLogout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("totem_session");
+      document.cookie = "totem_session=; path=/; max-age=0";
     }
     router.push("/login");
   };

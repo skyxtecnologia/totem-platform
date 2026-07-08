@@ -19,12 +19,13 @@ export default function LoginPage() {
     // Permite login de demonstração/acesso rápido para administradores do Macaé Smart Tour
     setTimeout(() => {
       setLoading(false);
-      // Salva sessão no localStorage/cookie do painel administrativo
+      // Salva sessão no localStorage e no COOKIE para o middleware no servidor
       if (typeof window !== "undefined") {
         localStorage.setItem("totem_session", "admin-authorized");
+        document.cookie = "totem_session=admin-authorized; path=/; max-age=86400; SameSite=Lax";
+        window.location.href = "/";
       }
-      router.push("/");
-    }, 600);
+    }, 500);
   };
 
   return (
