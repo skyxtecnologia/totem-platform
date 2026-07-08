@@ -1,13 +1,12 @@
 import { relations } from "drizzle-orm";
 import {
+  inet,
+  pgEnum,
   pgTable,
+  real,
   text,
   timestamp,
   varchar,
-  pgEnum,
-  jsonb,
-  inet,
-  real,
 } from "drizzle-orm/pg-core";
 import { tenants } from "./core";
 

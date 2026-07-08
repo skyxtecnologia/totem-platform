@@ -152,7 +152,12 @@ export interface Hotel {
 
 // ─── Events ───────────────────────────────────────────────────────────────────
 
-export type EventCategory = "show" | "festival" | "theater" | "gastronomy" | "exhibition";
+export type EventCategory =
+  | "show"
+  | "festival"
+  | "theater"
+  | "gastronomy"
+  | "exhibition";
 
 export interface Event {
   id: string;
@@ -272,7 +277,6 @@ export interface AdCreative {
   updatedAt: Date;
 }
 
-
 // ─── Emergency ────────────────────────────────────────────────────────────────
 
 export interface EmergencyContact {
@@ -306,4 +310,3 @@ export interface ApiError {
   message: string;
   issues?: unknown[];
 }
-

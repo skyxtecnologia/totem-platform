@@ -1,6 +1,9 @@
+import { adCampaigns, adCreatives, and, db, eq, gte, lte } from "@totem/db";
+import {
+  createAdCampaignSchema,
+  createAdCreativeSchema,
+} from "@totem/validators";
 import { Hono } from "hono";
-import { db, adCampaigns, adCreatives, and, eq, gte, lte } from "@totem/db";
-import { createAdCampaignSchema, createAdCreativeSchema } from "@totem/validators";
 
 const router = new Hono();
 
@@ -33,8 +36,8 @@ router.get("/", async (c) => {
           eq(adCampaigns.tenantId, tenantId),
           eq(adCampaigns.isActive, true),
           lte(adCampaigns.startDate, today),
-          gte(adCampaigns.endDate, today)
-        )
+          gte(adCampaigns.endDate, today),
+        ),
       );
 
     return c.json({ data: result });
@@ -51,19 +54,25 @@ router.post("/campaigns", async (c) => {
     const result = createAdCampaignSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const { tenantId, ...campaignData } = result.data;
     const newCampaignId = `campaign_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(adCampaigns).values({
-      id: newCampaignId,
-      tenantId,
-      ...campaignData,
-    });
+    const inserted = await db
+      .insert(adCampaigns)
+      .values({
+        id: newCampaignId,
+        tenantId,
+        ...campaignData,
+      })
+      .returning();
 
-    return c.json({ status: "Ad campaign created", id: newCampaignId }, 201);
+    return c.json({ status: "Ad campaign created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create ad campaign:", error);
     return c.json({ error: "Failed to create ad campaign" }, 500);
@@ -77,18 +86,24 @@ router.post("/creatives", async (c) => {
     const result = createAdCreativeSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const creativeData = result.data;
     const newCreativeId = `creative_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(adCreatives).values({
-      id: newCreativeId,
-      ...creativeData,
-    });
+    const inserted = await db
+      .insert(adCreatives)
+      .values({
+        id: newCreativeId,
+        ...creativeData,
+      })
+      .returning();
 
-    return c.json({ status: "Ad creative created", id: newCreativeId }, 201);
+    return c.json({ status: "Ad creative created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create ad creative:", error);
     return c.json({ error: "Failed to create ad creative" }, 500);

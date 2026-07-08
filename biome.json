@@ -1,13 +1,20 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
   "extends": ["./packages/config/biome.json"],
   "files": {
-    "ignore": [
-      "**/.wrangler/**",
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/build/**",
-      "**/.next/**"
+    "includes": [
+      "**",
+      "!**/.wrangler",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/build",
+      "!**/.next",
+      "!**/public"
     ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

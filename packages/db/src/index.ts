@@ -1,5 +1,5 @@
-import { config as dotenvConfig } from "dotenv";
 import * as path from "node:path";
+import { config as dotenvConfig } from "dotenv";
 
 // Load .env from monorepo root (safe for Node runtimes; ignored silently in CF Workers)
 if (typeof process !== "undefined" && typeof process.cwd === "function") {
@@ -11,9 +11,9 @@ if (typeof process !== "undefined" && typeof process.cwd === "function") {
   }
 }
 
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "./schema";
 
 // ─── Lazy singleton ──────────────────────────────────────────────────────────
@@ -30,7 +30,12 @@ export function getDb(): NodePgDatabase<typeof schema> {
         "DATABASE_URL is not set. Ensure the env-bridge middleware has run before calling getDb().",
       );
     }
-    _pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    _pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 4, // Permite concorrência de queries sequenciais na mesma rota
+      idleTimeoutMillis: 100, // Libera e fecha sockets ociosos quase que instantaneamente (100ms)
+      connectionTimeoutMillis: 1500,
+    });
     _db = drizzle(_pool, {
       schema,
       logger: process.env.NODE_ENV !== "production",
@@ -46,7 +51,6 @@ export const db = new Proxy({} as NodePgDatabase<typeof schema>, {
   },
 });
 
+export * from "drizzle-orm";
 // Export all schemas and enums for easy access
 export * from "./schema";
-export * from "drizzle-orm";
-

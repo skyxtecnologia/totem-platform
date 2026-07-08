@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
 import {
+  jsonb,
   pgTable,
+  real,
   text,
   timestamp,
   varchar,
-  jsonb,
-  real,
 } from "drizzle-orm/pg-core";
 import { tenants } from "./core";
 

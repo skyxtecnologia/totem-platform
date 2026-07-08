@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
+      "drizzle-orm": ["./node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["./node_modules/drizzle-orm/*"],
       "@totem/db/*": ["./packages/db/*"],
       "@totem/types/*": ["./packages/types/*"],
       "@totem/validators/*": ["./packages/validators/*"],

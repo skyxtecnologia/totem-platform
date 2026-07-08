@@ -7,6 +7,18 @@
     "skipLibCheck": true,
     "lib": ["ESNext"],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "drizzle-orm": ["../../node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["../../node_modules/drizzle-orm/*"],
+      "@totem/db": ["../../packages/db/src/index.ts"],
+      "@totem/db/*": ["../../packages/db/*"],
+      "@totem/types": ["../../packages/types/src/index.ts"],
+      "@totem/types/*": ["../../packages/types/*"],
+      "@totem/validators": ["../../packages/validators/src/index.ts"],
+      "@totem/validators/*": ["../../packages/validators/*"]
+    }
   }
 }

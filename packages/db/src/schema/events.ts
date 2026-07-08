@@ -1,12 +1,12 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
+  jsonb,
   pgTable,
+  real,
   text,
   timestamp,
   varchar,
-  jsonb,
-  real,
-  boolean,
 } from "drizzle-orm/pg-core";
 import { tenants } from "./core";
 

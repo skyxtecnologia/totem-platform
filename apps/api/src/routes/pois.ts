@@ -1,7 +1,6 @@
-import { Hono } from "hono";
-import { db, pois, and, eq } from "@totem/db";
+import { and, db, eq, pois } from "@totem/db";
 import { createPoiSchema } from "@totem/validators";
-import { z } from "zod";
+import { Hono } from "hono";
 
 const router = new Hono();
 
@@ -66,19 +65,25 @@ router.post("/", async (c) => {
     const result = createPoiSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const { tenantId, ...poiData } = result.data;
     const newPoiId = `poi_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(pois).values({
-      id: newPoiId,
-      tenantId,
-      ...poiData,
-    });
+    const inserted = await db
+      .insert(pois)
+      .values({
+        id: newPoiId,
+        tenantId,
+        ...poiData,
+      })
+      .returning();
 
-    return c.json({ status: "POI created", id: newPoiId }, 201);
+    return c.json({ status: "POI created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create POI:", error);
     return c.json({ error: "Failed to create POI" }, 500);

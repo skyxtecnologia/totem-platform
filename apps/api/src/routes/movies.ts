@@ -1,6 +1,6 @@
-import { Hono } from "hono";
-import { db, movies, movieSessions, and, eq, gte, asc } from "@totem/db";
+import { and, asc, db, eq, gte, movieSessions, movies } from "@totem/db";
 import { createMovieSchema, createMovieSessionSchema } from "@totem/validators";
+import { Hono } from "hono";
 
 const router = new Hono();
 
@@ -22,8 +22,6 @@ router.get("/", async (c) => {
     if (currentMovies.length === 0) {
       return c.json({ data: [] });
     }
-
-    const movieIds = currentMovies.map((m) => m.id);
 
     // 2. Obter sessões futuras para os filmes listados
     const today = new Date();
@@ -53,19 +51,25 @@ router.post("/", async (c) => {
     const result = createMovieSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const { tenantId, ...movieData } = result.data;
     const newMovieId = `movie_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(movies).values({
-      id: newMovieId,
-      tenantId,
-      ...movieData,
-    });
+    const inserted = await db
+      .insert(movies)
+      .values({
+        id: newMovieId,
+        tenantId,
+        ...movieData,
+      })
+      .returning();
 
-    return c.json({ status: "Movie created", id: newMovieId }, 201);
+    return c.json({ status: "Movie created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create movie:", error);
     return c.json({ error: "Failed to create movie" }, 500);
@@ -79,18 +83,24 @@ router.post("/sessions", async (c) => {
     const result = createMovieSessionSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const sessionData = result.data;
     const newSessionId = `session_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(movieSessions).values({
-      id: newSessionId,
-      ...sessionData,
-    });
+    const inserted = await db
+      .insert(movieSessions)
+      .values({
+        id: newSessionId,
+        ...sessionData,
+      })
+      .returning();
 
-    return c.json({ status: "Movie session created", id: newSessionId }, 201);
+    return c.json({ status: "Movie session created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create movie session:", error);
     return c.json({ error: "Failed to create movie session" }, 500);

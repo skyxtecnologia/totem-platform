@@ -92,7 +92,7 @@ export const poiMetadataSchema = z.object({
         name: z.string().min(1),
         photoUrl: z.string().url(),
         category: z.string(),
-      })
+      }),
     )
     .optional(),
 });
@@ -220,5 +220,3 @@ export const createAdCreativeSchema = z.object({
 
 export type CreateAdCampaignInput = z.infer<typeof createAdCampaignSchema>;
 export type CreateAdCreativeInput = z.infer<typeof createAdCreativeSchema>;
-
-

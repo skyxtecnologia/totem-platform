@@ -1,7 +1,7 @@
+import type { DeviceJWTPayload } from "@totem/types";
+import { jwtPayloadSchema } from "@totem/validators";
 import { createMiddleware } from "hono/factory";
 import { jwt } from "hono/jwt";
-import { jwtPayloadSchema } from "@totem/validators";
-import type { DeviceJWTPayload } from "@totem/types";
 import type { Env } from "../types";
 
 /**

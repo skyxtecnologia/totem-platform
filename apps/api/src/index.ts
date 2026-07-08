@@ -1,16 +1,15 @@
-import { db, deviceStatusEnum, devices, and, eq } from "@totem/db";
+import { and, db, deviceStatusEnum, devices, eq } from "@totem/db";
 import type { DeviceJWTPayload } from "@totem/types";
 import { Hono } from "hono";
 import { deviceAuthMiddleware } from "./middlewares/auth";
-import type { Env } from "./types";
-
+import adsRouter from "./routes/ads";
+import eventsRouter from "./routes/events";
+import hotelsRouter from "./routes/hotels";
+import moviesRouter from "./routes/movies";
 // Import sub-routers
 import poisRouter from "./routes/pois";
-import hotelsRouter from "./routes/hotels";
-import eventsRouter from "./routes/events";
-import moviesRouter from "./routes/movies";
 import utilitiesRouter from "./routes/utilities";
-import adsRouter from "./routes/ads";
+import type { Env } from "./types";
 
 const app = new Hono<{
   Bindings: Env;
@@ -75,4 +74,3 @@ deviceApi.post("/heartbeat", async (c) => {
 });
 
 export default app;
-

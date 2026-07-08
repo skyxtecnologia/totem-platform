@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
 import {
+  jsonb,
+  pgEnum,
   pgTable,
   text,
   timestamp,
   varchar,
-  pgEnum,
-  jsonb,
 } from "drizzle-orm/pg-core";
 import { devices } from "./devices";
 

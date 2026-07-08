@@ -1,6 +1,6 @@
-import { Hono } from "hono";
-import { db, hotels, and, eq } from "@totem/db";
+import { and, db, eq, hotels } from "@totem/db";
 import { createHotelSchema } from "@totem/validators";
+import { Hono } from "hono";
 
 const router = new Hono();
 
@@ -38,19 +38,25 @@ router.post("/", async (c) => {
     const result = createHotelSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const { tenantId, ...hotelData } = result.data;
     const newHotelId = `hotel_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(hotels).values({
-      id: newHotelId,
-      tenantId,
-      ...hotelData,
-    });
+    const inserted = await db
+      .insert(hotels)
+      .values({
+        id: newHotelId,
+        tenantId,
+        ...hotelData,
+      })
+      .returning();
 
-    return c.json({ status: "Hotel created", id: newHotelId }, 201);
+    return c.json({ status: "Hotel created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create hotel:", error);
     return c.json({ error: "Failed to create hotel" }, 500);

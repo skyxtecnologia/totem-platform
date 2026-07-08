@@ -1,6 +1,6 @@
-import { Hono } from "hono";
-import { db, events, and, eq, gte, asc } from "@totem/db";
+import { and, asc, db, eq, events, gte } from "@totem/db";
 import { createEventSchema } from "@totem/validators";
+import { Hono } from "hono";
 
 const router = new Hono();
 
@@ -43,19 +43,25 @@ router.post("/", async (c) => {
     const result = createEventSchema.safeParse(body);
 
     if (!result.success) {
-      return c.json({ error: "Validation failed", issues: result.error.issues }, 400);
+      return c.json(
+        { error: "Validation failed", issues: result.error.issues },
+        400,
+      );
     }
 
     const { tenantId, ...eventData } = result.data;
     const newEventId = `event_${crypto.randomUUID().replace(/-/g, "")}`;
 
-    await db.insert(events).values({
-      id: newEventId,
-      tenantId,
-      ...eventData,
-    });
+    const inserted = await db
+      .insert(events)
+      .values({
+        id: newEventId,
+        tenantId,
+        ...eventData,
+      })
+      .returning();
 
-    return c.json({ status: "Event created", id: newEventId }, 201);
+    return c.json({ status: "Event created", data: inserted[0] }, 201);
   } catch (error) {
     console.error("Failed to create event:", error);
     return c.json({ error: "Failed to create event" }, 500);
