@@ -1,0 +1,9 @@
+{
+  "name": "@totem/config",
+  "version": "0.1.0",
+  "private": true,
+  "files": ["biome.json", "tsconfig.base.json", "tailwind.config.js"],
+  "devDependencies": {
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

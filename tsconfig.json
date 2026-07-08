@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@totem/db/*": ["./packages/db/*"],
+      "@totem/types/*": ["./packages/types/*"],
+      "@totem/validators/*": ["./packages/validators/*"],
+      "@totem/ui/*": ["./packages/ui/*"],
+      "@totem/config/*": ["./packages/config/*"]
+    }
+  }
+}

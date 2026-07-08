@@ -1,0 +1,16 @@
+{
+  "name": "totem-platform-monorepo",
+  "private": true,
+  "scripts": {
+    "docker:dev": "docker-compose up -d",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check --apply ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@types/node": "^26.1.0",
+    "typescript": "^6.0.3"
+  },
+  "packageManager": "pnpm@9.5.0"
+}

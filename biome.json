@@ -1,0 +1,13 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "extends": ["./packages/config/biome.json"],
+  "files": {
+    "ignore": [
+      "**/.wrangler/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**"
+    ]
+  }
+}
